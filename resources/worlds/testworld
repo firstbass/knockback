@@ -2,7 +2,6 @@ name=côbalt testworld
 f=0.987
 a=.25
 g=0
-music="resources/music/ppp.mp3"
 ~player=nil,t,t,16,16,16,16
 ~object1=nil,t,f,256,192,64,64
 ~object2=nil,t,f,272,266,64,64
