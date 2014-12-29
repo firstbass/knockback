@@ -12,12 +12,13 @@ function World.loadFile(filepath)
 	local file=love.filesystem.newFile(filepath)
 	if assert(file:open("r"),filepath.." could not be opened.") then
 		for line in file:lines() do
-			if string.sub(line,1,1)=="~" then	-- a ~ means to load a Moveable object
-				w[string.gsub(string.gsub(line,"=.+",""),"~","",1)]	--w[text before =]
-					=assert(loadstring("return Moveable.new(w,"..	--=Moveable:new(w and everything after =)
-					string.gsub(line,".+=","")..")")(),"could not load line: "..line.." in file "..filepath)	--return error if this fails
+			local index=string.gsub(line,"=.+","")		--text before =
+			local arguments=string.gsub(line,".+=","")	--text after =
+			if string.sub(line,1,1)=="~" then			-- a ~ means to load a Moveable object
+				index=string.gsub(index,"~","",1)		--index without ~
+				w[index]=assert(loadstring("return Moveable.new(w,"..arguments..")")(),"could not load line: "..line.." in file "..filepath)
 			else
-				w[string.gsub(line,"=.+","")]=string.gsub(line,".+=","",1)	--w[text before =]=everything after =
+				w[index]=arguments	--w[text before =] = everything after =
 			end
 		end
 	end
@@ -38,13 +39,13 @@ function World:initializeCollisions()	--initializes the collision count tables, 
 end
 
 function World:basicSprites(r,g,b)	--gives all the objects in the world basic rectangle sprites of a r,g,b color
-	local fill="fill"
-	love.graphics.setColor(r or 0,g or 0,b or 0)
+	love.graphics.setColor(r or 0,g or 0,b or 0)	--default values if r,g,b values aren't provided
 	for i,ma in ipairs(self) do
-		if ma.sprite:typeOf("Canvas") then
+		if ma.sprite and ma.sprite:typeOf("Canvas") then
 			love.graphics.setCanvas(ma.sprite)
-			love.graphics.rectangle(fill,0,0,ma.xl,ma.yl)
-	end	end
+			love.graphics.rectangle("fill",0,0,ma.xl,ma.yl)
+		end
+	end
 	love.graphics.setCanvas()
 end
 

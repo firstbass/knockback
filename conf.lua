@@ -1,5 +1,5 @@
 function love.conf(t)
-	t.identity="./"
+	t.identity="knockback"
 	t.version="0.9.1"
 	
 	t.window.title="Knockback"

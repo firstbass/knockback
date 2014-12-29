@@ -49,6 +49,10 @@ function Moveable:update(dt)
 	end
 end
 
+function Moveable:draw()
+	love.graphics.draw(self.sprite,self.x,self.y,0,self.xscl,self.yscl)
+end
+
 function Moveable:collidesWith(ma)
 	local xcollision,ycollision=self:collidesXWith(ma),self:collidesYWith(ma)
 	return xcollision,ycollision,xcollision and ycollision

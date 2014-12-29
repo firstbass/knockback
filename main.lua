@@ -1,4 +1,4 @@
-require "TEsound"		local TEsound=TEsound
+require "TEsound"			local TEsound=TEsound
 Moveable=require "moveable"	local Moveable=Moveable
 World=require "world"		local World=World
 local love=love
@@ -8,7 +8,12 @@ local world
 local keys,debug,paused
 local playtime,start
 local oxygenmono,dayposterblack
-local function round(num) return math.floor(num+0.5) end
+local threshold=64				--threshold for when to begin scrolling the screen.
+
+local function round(num, idp)
+	local mult = 10^(idp or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
 
 function love.load()
 	keys=World.loadFile("resources/worlds/keybindings")
@@ -19,7 +24,7 @@ function love.load()
 	
 	world=World.loadFile("resources/worlds/testworld")
 	world:initializeCollisions()
-	--world:basicSprites()
+	world:basicSprites(160,160,160)
 	if world.music then world:playMusic() end
 	
 	love.graphics.setBackgroundColor(255,255,255)
@@ -31,6 +36,12 @@ function love.update(dt)
 	for i,ma in ipairs(world) do
 		ma:update(dt)
 	end
+	
+	--[[if world.player.y>=love.window.getHeight()-threshold then
+		world.ty=world.ty+.01*threshold
+	elseif world.player.y<=threshold then
+		world.ty=world.ty-.01*threshold
+	end				--this is to try to scroll the screen. isn't working quite yet.]]
 	playtime=math.floor(love.timer.getTime()-start)
 	TEsound.cleanup()
 end
@@ -38,23 +49,28 @@ end
 function pausedupdate() end
 
 function love.draw()
+	love.graphics.translate(world.tx,world.ty)
 	love.graphics.setColor(255,255,255)
 	for i,ma in ipairs(world) do
-		love.graphics.draw(ma.sprite,ma.x,ma.y,0,ma.xscl,ma.yscl)
+		ma:draw()
 	end
 	if debug then
+		love.graphics.translate(-world.tx,-world.ty)
 		love.graphics.setColor(0,0,0)	love.graphics.setFont(oxygenmono)
-		love.graphics.print("world name: "..world.name
-		.."\nx: "..round(world.player.x)..", y: "..round(world.player.y)
-		.."\nfps: "..love.timer.getFPS()
-		.."\nplaytime: "..playtime.." seconds",10,10)
+		love.graphics.print(
+			"world name: "..world.name..
+			"\nx: "..round(world.player.x)..", y: "..round(world.player.y)..
+			"\nfps: "..love.timer.getFPS()..
+			"\nplaytime: "..playtime.." seconds",10,10)
 	end
 end
 
 function pauseddraw()
-	love.graphics.setColor(0,0,0)	love.graphics.setFont(oxygenmono)
+	love.graphics.setColor(0,0,0)
+	love.graphics.setFont(oxygenmono)
 	love.graphics.print("playtime: "..playtime.." seconds",10,10)
-	love.graphics.setFont(dayposterblack) love.graphics.printf("GAME PAUSED",0,200,512,"center")
+	love.graphics.setFont(dayposterblack)
+	love.graphics.printf("GAME PAUSED",0,200,512,"center")
 end
 
 function love.keypressed(key)
