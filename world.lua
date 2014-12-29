@@ -12,27 +12,30 @@ function World.loadFile(filepath)
 	local file=love.filesystem.newFile(filepath)
 	if assert(file:open("r"),filepath.." could not be opened.") then
 		for line in file:lines() do
-			if string.sub(line,1,1)=="~" then
-				w[string.gsub(string.gsub(line,"=.+",""),"~","",1)]
-					=assert(loadstring("return Moveable:new(w,"..
-					string.gsub(line,".+=","")..")")(),"could not load line: "..line.." in file "..filepath)
+			if string.sub(line,1,1)=="~" then	-- a ~ means to load a Moveable object
+				w[string.gsub(string.gsub(line,"=.+",""),"~","",1)]	--w[text before =]
+					=assert(loadstring("return Moveable:new(w,"..	--=Moveable:new(w and everything after =)
+					string.gsub(line,".+=","")..")")(),"could not load line: "..line.." in file "..filepath)	--return error if this fails
 			else
-				w[string.gsub(line,"=.+","")]=string.gsub(line,".+=","",1)
+				w[string.gsub(line,"=.+","")]=string.gsub(line,".+=","",1)	--w[text before =]=everything after =
 	end	end	end
 	local rw=w;w,t,f=nil,nil,nil
 	setmetatable(rw,mt)
 	return rw
 end
 
-function World:initializeCollisions()
-	for i,ma in ipairs(self) do
+function World:initializeCollisions()	--initializes the collision count tables, which determine which axis to correct in the event of a collision
+	for i,ma in ipairs(self) do			
 		for imi,imma in ipairs(self) do
 			if type(imma)=="table" then
-				ma.worldxcount[imma]=0
-				ma.worldycount[imma]=0
-end	end	end	end
+				ma.xcollisioncount[imma]=0
+				ma.ycollisioncount[imma]=0
+			end
+		end
+	end
+end
 
-function World:basicSprites(r,g,b)
+function World:basicSprites(r,g,b)	--gives all the objects in the world basic rectangle sprites of a r,g,b color
 	local fill="fill"
 	love.graphics.setColor(r or 0,g or 0,b or 0)
 	for i,ma in ipairs(self) do

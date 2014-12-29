@@ -1,37 +1,41 @@
 --moveable.lua
 
-
 local Moveable={}
 local mt={__index=Moveable}
 local love=love
 
 function Moveable:new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
-	local sprite=assert(love.graphics.newImage(spritepath),spritepath.." is not a valid image")
+	local sprite=assert(love.graphics.newImage(spritepath),spritepath.." is not a valid image")	--tries to load the image; this is the problem line
 	local mc,mm,mx,my,mxl,myl,mvx,mvy,max,may
 		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mvx or 0,mvy or 0,max or 0,may or 0
 	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,vx=mvx,vy=mvy,ax=max,ay=may,
-		world=world,worldxcount={},worldycount={},sprite=love.graphics.newCanvas()}
+		world=world,xcollisioncount={},ycollisioncount={},sprite=love.graphics.newCanvas()}
 	setmetatable(m,mt)
-	world[#world+1]=m
+	world[#world+1]=m	--inserts the moveable into a new index in the world
 	return m
 end
 
 function Moveable:update(dt)
 	if self.moveable then
 		self.vx=(self.vx+self.ax)*self.world.f
-		self.vy=(self.vy+self.ay)*self.world.f
+		self.vy=(self.vy+self.ay)*self.world.f	--(velocity+acceleration)*friction
 		self.x=self.x+self.vx
-		self.y=self.y+self.vy
+		self.y=self.y+self.vy					--position+velocity
 
-		for i,ma in ipairs(self.world) do
-			if self~=ma and self.vx and self.vy then
-				local xcollision,ycollision=self:collidesWith(ma)
-				if self.worldxcount[ma]<2 and xcollision then self.worldxcount[ma]=self.worldxcount[ma]+1
-					elseif not xcollision then self.worldxcount[ma]=0 end
-				if self.worldycount[ma]<2 and ycollision then self.worldycount[ma]=self.worldycount[ma]+1
-					elseif not ycollision then self.worldycount[ma]=0 end
-				if xcollision and ycollision then self:correctCollision(ma)
-end	end	end	end	end
+		for i,ma in ipairs(self.world) do		--check object with all other objects in its world
+			if self~=ma and self.vx and self.vy then	--only if it's moving
+				local xcollision,ycollision=self:collidesWith(ma)	--checks basic axis collisions
+				if self.xcollisioncount[ma]<2 and xcollision then self.xcollisioncount[ma]=self.xcollisioncount[ma]+1
+					elseif not xcollision then self.xcollisioncount[ma]=0 end
+				if self.ycollisioncount[ma]<2 and ycollision then self.ycollisioncount[ma]=self.ycollisioncount[ma]+1
+					elseif not ycollision then self.ycollisioncount[ma]=0 end	--determines which axis has been colliding for longer
+				if xcollision and ycollision
+					then self:correctCollision(ma)	--corrects them if the objects have collided
+				end
+			end
+		end
+	end
+end
 
 function Moveable:collidesWith(ma)
 	local xcollision,ycollision=self:collidesXWith(ma),self:collidesYWith(ma)
@@ -48,11 +52,11 @@ end
 
 function Moveable:overlapXWith(ma) return self.y+self.yl-ma.y end
 
-function Moveable:overlapYWith(ma) return self.x+self.xl-ma.x end
+function Moveable:overlapYWith(ma) return self.x+self.xl-ma.x end	--returns the overlap with other moveables
 
 function Moveable:correctCollision(ma)
-	if self.worldxcount[ma]<=self.worldycount[ma] then self:correctXCollision(ma)
-	elseif self.worldycount[ma]<self.worldxcount[ma] then self:correctYCollision(ma)
+	if self.xcollisioncount[ma]<=self.ycollisioncount[ma] then self:correctXCollision(ma)
+	elseif self.ycollisioncount[ma]<self.xcollisioncount[ma] then self:correctYCollision(ma)
 end	end
 
 function Moveable:correctXCollision(ma)
