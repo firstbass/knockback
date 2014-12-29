@@ -7,7 +7,7 @@ local TEsound=TEsound
 local love=love
 local ipairs=ipairs
 
-function World:loadFile(filepath)
+function World.loadFile(filepath)
 	w,t,f={},true,false
 	local file=love.filesystem.newFile(filepath)
 	if assert(file:open("r"),filepath.." could not be opened.") then
