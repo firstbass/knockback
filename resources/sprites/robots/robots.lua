@@ -25,6 +25,4 @@ robots["down"][3]=love.graphics.newImage(d.."down3.png")
 robots["down"][4]=love.graphics.newImage(d.."down4.png")
 end
 
-function getsprites()
-	return robots
-end
+return robots
