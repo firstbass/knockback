@@ -1,6 +1,4 @@
---main.lua
-
-require "TEsound"			local TEsound=TEsound
+require "TEsound"		local TEsound=TEsound
 Moveable=require "moveable"	local Moveable=Moveable
 World=require "world"		local World=World
 local love=love
@@ -39,24 +37,19 @@ end
 
 function pausedupdate() end
 
-function randomcolor(set)
-	local r,g,b=math.random(1,255),math.random(1,255),math.random(1,255)
-	if set then love.graphics.setColor(r,g,b)
-	else return r,g,b
-end	end
-
 function love.draw()
 	for i,ma in ipairs(world) do
 		love.graphics.draw(ma.sprite,ma.x,ma.y)
 	end
-    
+	
 	if debug then
 		love.graphics.setColor(0,0,0)	love.graphics.setFont(oxygenmono)
 		love.graphics.print("world name: "..world.name
 		.."\nx: "..round(world.player.x)..", y: "..round(world.player.y)
 		.."\nfps: "..love.timer.getFPS()
 		.."\nplaytime: "..playtime.." seconds",10,10)
-end	end
+	end
+end
 
 function pauseddraw()
 	love.graphics.setColor(0,0,0)	love.graphics.setFont(oxygenmono)
@@ -79,10 +72,13 @@ function love.keypressed(key)
 		paused=not paused
 		love.update,pausedupdate=pausedupdate,love.update
 		love.draw,pauseddraw=pauseddraw,love.draw
-        if paused and world.music then world.pauseMusic() else world.resumeMusic() end
+        		if paused and world.music then
+        			world.pauseMusic() else world.resumeMusic()
+        		end
 	elseif key==keys.quit then
 		love.event.push("quit")
-end	end
+	end
+end
 
 function love.keyreleased(key)
 	if key==keys.up then
@@ -93,4 +89,5 @@ function love.keyreleased(key)
 		world.player.ax=0
 	elseif key==keys.right then
 		world.player.ax=0
-end	end
+	end
+end
