@@ -64,7 +64,7 @@ function Moveable:correctXCollision(ma)
 	if overlap>ma.yl then overlap=overlap-ma.yl-self.yl end
 	self.y=self.y-overlap
 	self.vy=0
-	self.worldxcount[ma]=0
+	self.xcollisioncount[ma]=0
 end
 
 function Moveable:correctYCollision(ma)
@@ -72,7 +72,7 @@ function Moveable:correctYCollision(ma)
 	if overlap>ma.xl then overlap=overlap-ma.xl-self.xl end
 	self.x=self.x-overlap
 	self.vx=0
-	self.worldycount[ma]=0
+	self.ycollisioncount[ma]=0
 end
 
 return Moveable

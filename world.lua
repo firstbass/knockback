@@ -18,7 +18,9 @@ function World.loadFile(filepath)
 					string.gsub(line,".+=","")..")")(),"could not load line: "..line.." in file "..filepath)	--return error if this fails
 			else
 				w[string.gsub(line,"=.+","")]=string.gsub(line,".+=","",1)	--w[text before =]=everything after =
-	end	end	end
+			end
+		end
+	end
 	local rw=w;w,t,f=nil,nil,nil
 	setmetatable(rw,mt)
 	return rw
