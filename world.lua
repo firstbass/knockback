@@ -1,7 +1,6 @@
 --world.lua
 
 local World={}
-local mt={__index=World}
 local Moveable=Moveable
 local TEsound=TEsound
 local love=love
@@ -9,12 +8,15 @@ local ipairs=ipairs
 
 function World.loadFile(filepath)
 	w,t,f={},true,false
+	w.tx,w.ty,w.tvx,w.tvy,w.tax,w.tay=0,0,0,0,0,0
 	local file=love.filesystem.newFile(filepath)
 	if assert(file:open("r"),filepath.." could not be opened.") then
 		for line in file:lines() do
 			local index=string.gsub(line,"=.+","")		--text before =
 			local arguments=string.gsub(line,".+=","")	--text after =
-			if string.sub(line,1,1)=="~" then			-- a ~ means to load a Moveable object
+			if string.sub(line,1,2)=="--" then
+				--do nothing
+			elseif string.sub(line,1,1)=="~" then		-- a ~ means to load a Moveable object
 				index=string.gsub(index,"~","",1)		--index without ~
 				w[index]=assert(loadstring("return Moveable.new(w,"..arguments..")")(),"could not load line: "..line.." in file "..filepath)
 			else
@@ -23,7 +25,7 @@ function World.loadFile(filepath)
 		end
 	end
 	local rw=w;w,t,f=nil,nil,nil
-	setmetatable(rw,mt)
+	setmetatable(rw,{__index=World})
 	return rw
 end
 
@@ -47,6 +49,16 @@ function World:basicSprites(r,g,b)	--gives all the objects in the world basic re
 		end
 	end
 	love.graphics.setCanvas()
+end
+
+function World:update()
+	self.tvx=(self.tvx+self.tax)*self.f
+	self.tvy=(self.tvy+self.tay)*self.f
+	self.tx=self.tx+self.tvx
+	self.ty=self.ty+self.tvy
+	for i,ma in ipairs(self) do
+		ma:update(dt)
+	end
 end
 
 function World:playMusic() TEsound.playLooping(self.music,"world") end

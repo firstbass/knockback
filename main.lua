@@ -33,15 +33,20 @@ function love.load()
 end
 
 function love.update(dt)
-	for i,ma in ipairs(world) do
-		ma:update(dt)
+	world:update()
+	
+	if world.player.y+world.player.yl+world.ty>=love.window.getHeight()-threshold and world.player.vy>0 then
+		world.ty=-(world.player.y+world.player.yl+threshold-love.window.getHeight())
+	elseif world.player.y+world.ty<=threshold and world.player.vy<0 then
+		world.ty=-(world.player.y-threshold)
 	end
 	
-	--[[if world.player.y>=love.window.getHeight()-threshold then
-		world.ty=world.ty+.01*threshold
-	elseif world.player.y<=threshold then
-		world.ty=world.ty-.01*threshold
-	end				--this is to try to scroll the screen. isn't working quite yet.]]
+	if world.player.x+world.player.xl+world.tx>=love.window.getWidth()-threshold and world.player.vx>0 then
+		world.tx=-(world.player.x+world.player.xl+threshold-love.window.getWidth())
+	elseif world.player.x+world.tx<=threshold and world.player.vx<0 then
+		world.tx=-(world.player.x-threshold)
+	end
+	
 	playtime=math.floor(love.timer.getTime()-start)
 	TEsound.cleanup()
 end
@@ -60,6 +65,7 @@ function love.draw()
 		love.graphics.print(
 			"world name: "..world.name..
 			"\nx: "..round(world.player.x)..", y: "..round(world.player.y)..
+			"\ntx: "..round(world.tx)..", ty: "..round(world.ty)..
 			"\nfps: "..love.timer.getFPS()..
 			"\nplaytime: "..playtime.." seconds",10,10)
 	end
