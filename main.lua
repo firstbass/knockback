@@ -19,7 +19,7 @@ function love.load()
 	
 	world=World.loadFile("resources/worlds/testworld")
 	world:initializeCollisions()
-	world:basicSprites()
+	--world:basicSprites()
 	if world.music then world:playMusic() end
 	
 	love.graphics.setBackgroundColor(255,255,255)
