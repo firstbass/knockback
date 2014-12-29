@@ -2,20 +2,24 @@
 
 local Moveable={}
 local mt={__index=Moveable}
+	--[[If something doesn't exist in the created Moveable object, it refers back to the Moveable table, due to this metatable.
+		This is essentially how all class inheritance in Lua works/is implemented. Metatables are weird but handy.]]
 local love=love
 
-function Moveable:new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
+function Moveable.new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
 	local sprite,mxscl,myscl	--sprite,x scale,y scale (of the sprite, when drawn)
+	
 	if spritepath then
 		sprite=assert(love.graphics.newImage(spritepath),spritepath.." is not a valid image path")	--tries to load the image
-		if sprite:getWidth()~=mxl and sprite:getHeight()~=myl then
-			sprite:setFilter("nearest","nearest")
-			mxscl=mxl/sprite:getWidth()
-			myxcl=myl/sprite:getHeight()
+		if sprite:getWidth()~=mxl or sprite:getHeight()~=myl then	--if the sprite's size isn't the same as the Moveable
+			sprite:setFilter("nearest","nearest")		--the sprite will scale without smoothing
+			mxscl=mxl/sprite:getWidth()	
+			myscl=myl/sprite:getHeight()				--the sprite will scale to the size of the Moveable
 		end
 	end
-	local mc,mm,mx,my,mxl,myl,mvx,mvy,max,may
-		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mvx or 0,mvy or 0,max or 0,may or 0
+	
+	local mc,mm,mx,my,mxl,myl,mxscl,myscl,mvx,mvy,max,may
+		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mxscl or 1,myscl or 1,mvx or 0,mvy or 0,max or 0,may or 0	--default values
 	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,xscl=mxscl,yscl=myscl,vx=mvx,vy=mvy,ax=max,ay=may,
 		world=world,xcollisioncount={},ycollisioncount={},sprite=sprite or love.graphics.newCanvas()}
 	setmetatable(m,mt)

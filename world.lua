@@ -14,7 +14,7 @@ function World.loadFile(filepath)
 		for line in file:lines() do
 			if string.sub(line,1,1)=="~" then	-- a ~ means to load a Moveable object
 				w[string.gsub(string.gsub(line,"=.+",""),"~","",1)]	--w[text before =]
-					=assert(loadstring("return Moveable:new(w,"..	--=Moveable:new(w and everything after =)
+					=assert(loadstring("return Moveable.new(w,"..	--=Moveable:new(w and everything after =)
 					string.gsub(line,".+=","")..")")(),"could not load line: "..line.." in file "..filepath)	--return error if this fails
 			else
 				w[string.gsub(line,"=.+","")]=string.gsub(line,".+=","",1)	--w[text before =]=everything after =
