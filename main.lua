@@ -11,13 +11,13 @@ local oxygenmono,dayposterblack
 local function round(num) return math.floor(num+0.5) end
 
 function love.load()
-	keys=World:loadFile("resources/worlds/keybindings")
+	keys=World.loadFile("resources/worlds/keybindings")
 	debug,paused=false,false
 	playtime,start=0,love.timer.getTime()
 	
 	math.randomseed(os.time())
 	
-	world=World:loadFile("resources/worlds/testworld")
+	world=World.loadFile("resources/worlds/testworld")
 	world:initializeCollisions()
 	world:basicSprites()
 	if world.music then world:playMusic() end
