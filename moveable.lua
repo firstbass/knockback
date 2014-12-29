@@ -5,10 +5,18 @@ local mt={__index=Moveable}
 local love=love
 
 function Moveable:new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
-	local sprite=assert(love.graphics.newImage(spritepath),spritepath.." is not a valid image")	--tries to load the image; this is the problem line
+	local sprite,mxscl,myscl	--sprite,x scale,y scale (of the sprite, when drawn)
+	if spritepath then
+		sprite=assert(love.graphics.newImage(spritepath),spritepath.." is not a valid image path")	--tries to load the image
+		if sprite:getWidth()~=mxl and sprite:getHeight()~=myl then
+			sprite:setFilter("nearest","nearest")
+			mxscl=mxl/sprite:getWidth()
+			myxcl=myl/sprite:getHeight()
+		end
+	end
 	local mc,mm,mx,my,mxl,myl,mvx,mvy,max,may
 		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mvx or 0,mvy or 0,max or 0,may or 0
-	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,vx=mvx,vy=mvy,ax=max,ay=may,
+	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,xscl=mxscl,yscl=myscl,vx=mvx,vy=mvy,ax=max,ay=may,
 		world=world,xcollisioncount={},ycollisioncount={},sprite=sprite or love.graphics.newCanvas()}
 	setmetatable(m,mt)
 	world[#world+1]=m	--inserts the moveable into a new index in the world

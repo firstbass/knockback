@@ -38,10 +38,10 @@ end
 function pausedupdate() end
 
 function love.draw()
+	love.graphics.setColor(255,255,255)
 	for i,ma in ipairs(world) do
-		love.graphics.draw(ma.sprite,ma.x,ma.y)
+		love.graphics.draw(ma.sprite,ma.x,ma.y,0,ma.xscl,ma.yscl)
 	end
-	
 	if debug then
 		love.graphics.setColor(0,0,0)	love.graphics.setFont(oxygenmono)
 		love.graphics.print("world name: "..world.name
