@@ -8,7 +8,7 @@ local ipairs=ipairs
 
 function World.loadFile(filepath)
 	w,t,f={},true,false
-	w.tx,w.ty,w.tvx,w.tvy,w.tax,w.tay=0,0,0,0,0,0
+	w.tx,w.ty=0,0
 	local file=love.filesystem.newFile(filepath)
 	if assert(file:open("r"),filepath.." could not be opened.") then
 		for line in file:lines() do
@@ -52,10 +52,6 @@ function World:basicSprites(r,g,b)	--gives all the objects in the world basic re
 end
 
 function World:update()
-	self.tvx=(self.tvx+self.tax)*self.f
-	self.tvy=(self.tvy+self.tay)*self.f
-	self.tx=self.tx+self.tvx
-	self.ty=self.ty+self.tvy
 	for i,ma in ipairs(self) do
 		ma:update(dt)
 	end
