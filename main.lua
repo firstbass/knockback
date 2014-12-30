@@ -7,7 +7,7 @@ local ipairs=ipairs
 local world
 local playtime,pausedtime,start
 local oxygenmono,dayposterblack
-
+local debug=0
 local function round(num, idp)
 	local mult = 10^(idp or 0)
 	return math.floor(num * mult + 0.5) / mult
@@ -25,7 +25,7 @@ function love.load()
 	world:basicSprites(160,160,160)
 	if world.music then world:playMusic() end
 	world.player:setWorldFollowing(true)
-	world.threshold=world.threshold+0
+	world.threshold=tonumber(world.threshold)
 	
 	love.graphics.setBackgroundColor(255,255,255)
 	oxygenmono,dayposterblack=love.graphics.newFont("resources/fonts/oxygenmono.otf"),
@@ -92,6 +92,13 @@ function love.keypressed(key)
 	end
 end
 
+function animate()
+	if debug == 0 then
+		world.player.ia=1
+		world.player:nextSprite()
+end	end
+
+
 function love.keyreleased(key)
 	if key==keys.up then
 		world.player.ay=0
@@ -102,6 +109,5 @@ function love.keyreleased(key)
 	elseif key==keys.right then
 		world.player.ax=0
 	end
-	world.player.ia=1
-	world.player:nextSprite()
+	animate()
 end
