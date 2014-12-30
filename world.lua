@@ -1,5 +1,3 @@
---world.lua
-
 local World={}
 local Moveable=Moveable
 local TEsound=TEsound

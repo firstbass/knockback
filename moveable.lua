@@ -1,28 +1,36 @@
---moveable.lua
-
 local Moveable={}
-local mt={__index=Moveable}
-	--[[If something doesn't exist in the created Moveable object, it refers back to the Moveable table, due to this metatable.
-		This is essentially how all class inheritance in Lua works/is implemented. Metatables are weird but handy.]]
+local Sprite=require "sprite"
 local love=love
+local ipairs=ipairs
 
 function Moveable.new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
-	local sprite,mxscl,myscl	--sprite,x scale,y scale (of the sprite, when drawn)
+	--[[local sprite,sprites,mxscl,myscl	--sprite,x scale,y scale (of the sprite, when drawn)
 	
 	if spritepath then
-		sprite=assert(love.graphics.newImage(spritepath),spritepath.." is not a valid image path")	--tries to load the image
-		if sprite:getWidth()~=mxl or sprite:getHeight()~=myl then	--if the sprite's size isn't the same as the Moveable
-			sprite:setFilter("nearest","nearest")		--the sprite will scale without smoothing
-			mxscl=mxl/sprite:getWidth()	
-			myscl=myl/sprite:getHeight()				--the sprite will scale to the size of the Moveable
+		if love.filesystem.isFile(spritepath) then	--load a single sprite
+			sprite=love.graphics.newImage(spritepath)
+			if sprite:getWidth()~=mxl or sprite:getHeight()~=myl then	--if the sprite's size isn't the same as the Moveable
+				sprite:setFilter("nearest","nearest")		--the sprite will scale without smoothing
+				mxscl=mxl/sprite:getWidth()	
+				myscl=myl/sprite:getHeight()				--the sprite will scale to the size of the Moveable
+			end
+		elseif love.filesystem.isDirectory(spritepath) then	--load a sprite sheet, essentially
+			local contentpaths=love.filesystem.getDirectoryItems(spritepath)
+			sprites={}
+			for i,s in ipairs(contentpaths) do
+				sprites[i]
 		end
-	end
+	end]]
+	
+	local sprite,sprites,mxscl,myscl=Sprite.newSpriteField(spritepath,mxl,myl)
 	
 	local mc,mm,mx,my,mxl,myl,mxscl,myscl,mvx,mvy,max,may
 		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mxscl or 1,myscl or 1,mvx or 0,mvy or 0,max or 0,may or 0	--default values
 	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,xscl=mxscl,yscl=myscl,vx=mvx,vy=mvy,ax=max,ay=may,
-		world=world,xcollisioncount={},ycollisioncount={},sprite=sprite or love.graphics.newCanvas()}
-	setmetatable(m,mt)
+		world=world,xcollisioncount={},ycollisioncount={},sprite=sprite,sprites=sprites}
+	setmetatable(m,{__index=Moveable})
+		--[[If something doesn't exist in the created Moveable object, it refers back to the Moveable table, due to this metatable.
+		This is essentially how all class inheritance in Lua works/is implemented. Metatables are weird but handy.]]
 	world[#world+1]=m	--inserts the moveable into a new index in the world
 	return m
 end

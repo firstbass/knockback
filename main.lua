@@ -6,7 +6,7 @@ local ipairs=ipairs
 
 local world
 local keys,debug,paused
-local playtime,start
+local playtime,pausedtime,start
 local oxygenmono,dayposterblack
 local threshold=64				--threshold for when to begin scrolling the screen.
 
@@ -18,7 +18,7 @@ end
 function love.load()
 	keys=World.loadFile("resources/worlds/keybindings")
 	debug,paused=false,false
-	playtime,start=0,love.timer.getTime()
+	playtime,pausedtime,start=0,0,love.timer.getTime()
 	
 	math.randomseed(os.time())
 	
@@ -46,12 +46,14 @@ function love.update(dt)
 	elseif world.player.x+world.tx<=threshold and world.player.vx<0 then
 		world.tx=-(world.player.x-threshold)
 	end
-	
-	playtime=math.floor(love.timer.getTime()-start)
+
+	playtime=math.floor(love.timer.getTime()-pausedtime-start)
 	TEsound.cleanup()
 end
 
-function pausedupdate() end
+function pausedupdate(dt) 
+	pausedtime=pausedtime+dt
+end
 
 function love.draw()
 	love.graphics.translate(world.tx,world.ty)
