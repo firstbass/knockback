@@ -4,35 +4,21 @@ local love=love
 local ipairs=ipairs
 
 function Moveable.new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
-	--[[local sprite,sprites,mxscl,myscl	--sprite,x scale,y scale (of the sprite, when drawn)
-	
-	if spritepath then
-		if love.filesystem.isFile(spritepath) then	--load a single sprite
-			sprite=love.graphics.newImage(spritepath)
-			if sprite:getWidth()~=mxl or sprite:getHeight()~=myl then	--if the sprite's size isn't the same as the Moveable
-				sprite:setFilter("nearest","nearest")		--the sprite will scale without smoothing
-				mxscl=mxl/sprite:getWidth()	
-				myscl=myl/sprite:getHeight()				--the sprite will scale to the size of the Moveable
-			end
-		elseif love.filesystem.isDirectory(spritepath) then	--load a sprite sheet, essentially
-			local contentpaths=love.filesystem.getDirectoryItems(spritepath)
-			sprites={}
-			for i,s in ipairs(contentpaths) do
-				sprites[i]
-		end
-	end]]
-	
 	local sprite,sprites,mxscl,myscl=Sprite.newSpriteField(spritepath,mxl,myl)
 	
 	local mc,mm,mx,my,mxl,myl,mxscl,myscl,mvx,mvy,max,may
 		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mxscl or 1,myscl or 1,mvx or 0,mvy or 0,max or 0,may or 0	--default values
 	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,xscl=mxscl,yscl=myscl,vx=mvx,vy=mvy,ax=max,ay=may,
-		world=world,xcollisioncount={},ycollisioncount={},sprite=sprite,sprites=sprites}
+		world=world,following=false,xcollisioncount={},ycollisioncount={},sprite=sprite,sprites=sprites}
 	setmetatable(m,{__index=Moveable})
 		--[[If something doesn't exist in the created Moveable object, it refers back to the Moveable table, due to this metatable.
 		This is essentially how all class inheritance in Lua works/is implemented. Metatables are weird but handy.]]
 	world[#world+1]=m	--inserts the moveable into a new index in the world
 	return m
+end
+
+function Moveable:setWorldFollowing(following)
+	self.following=following
 end
 
 function Moveable:update(dt)
@@ -41,7 +27,20 @@ function Moveable:update(dt)
 		self.vy=(self.vy+self.ay)*self.world.f	--(velocity+acceleration)*friction
 		self.x=self.x+self.vx
 		self.y=self.y+self.vy					--position+velocity
-
+		if self.following then
+			if self.y+self.yl+self.world.ty>=love.window.getHeight()-self.world.threshold and self.vy>0 then
+				self.world.ty=-(self.y+self.yl+self.world.threshold-love.window.getHeight())
+			elseif self.y+self.world.ty<=self.world.threshold and self.vy<0 then
+				self.world.ty=-(self.y-self.world.threshold)
+			end
+	
+			if self.x+self.xl+self.world.tx>=love.window.getWidth()-self.world.threshold and self.vx>0 then
+				self.world.tx=-(self.x+self.xl+self.world.threshold-love.window.getWidth())
+			elseif self.x+self.world.tx<=self.world.threshold and self.vx<0 then
+				self.world.tx=-(self.x-self.world.threshold)
+			end
+		end
+		
 		for i,ma in ipairs(self.world) do		--check object with all other objects in its world
 			if self~=ma and self.vx and self.vy then	--only if it's moving
 				local xcollision,ycollision=self:collidesWith(ma)	--checks basic axis collisions

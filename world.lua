@@ -49,7 +49,7 @@ function World:basicSprites(r,g,b)	--gives all the objects in the world basic re
 	love.graphics.setCanvas()
 end
 
-function World:update()
+function World:update(dt)
 	for i,ma in ipairs(self) do
 		ma:update(dt)
 	end

@@ -10,12 +10,13 @@ function Sprite.newSpriteField(filepath,xl,yl)
 		return r,{[1]=r},xl/r:getWidth(),yl/r:getHeight()
 	elseif filepath and love.filesystem.isDirectory(filepath) then
 		r={}
-		love.filesystem.getDirectoryItems(filepath,
-			function(filename)
-				local i=love.graphics.newImage("resources/sprites/robots/"..filename)
-				i:setFilter("nearest","nearest")
-				table.insert(r,i) end)
-		return r[1],r,xl/r:getWidth(),yl/r:getHeight()
+		local items=love.filesystem.getDirectoryItems(filepath)
+		for k,file in ipairs(items) do
+			local i=love.graphics.newImage(filepath.."/"..file)
+			i:setFilter("nearest","nearest")
+			table.insert(r,i)
+		end
+		return r[1],r,xl/r[1]:getWidth(),yl/r[1]:getHeight()
 	else
 		r=love.graphics.newCanvas()
 		r:setFilter("nearest","nearest")

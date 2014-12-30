@@ -26,6 +26,8 @@ function love.load()
 	world:initializeCollisions()
 	world:basicSprites(160,160,160)
 	if world.music then world:playMusic() end
+	world.player:setWorldFollowing(true)
+	world.threshold=world.threshold+0
 	
 	love.graphics.setBackgroundColor(255,255,255)
 	oxygenmono,dayposterblack=love.graphics.newFont("resources/fonts/oxygenmono.otf"),
@@ -33,19 +35,7 @@ function love.load()
 end
 
 function love.update(dt)
-	world:update()
-	
-	if world.player.y+world.player.yl+world.ty>=love.window.getHeight()-threshold and world.player.vy>0 then
-		world.ty=-(world.player.y+world.player.yl+threshold-love.window.getHeight())
-	elseif world.player.y+world.ty<=threshold and world.player.vy<0 then
-		world.ty=-(world.player.y-threshold)
-	end
-	
-	if world.player.x+world.player.xl+world.tx>=love.window.getWidth()-threshold and world.player.vx>0 then
-		world.tx=-(world.player.x+world.player.xl+threshold-love.window.getWidth())
-	elseif world.player.x+world.tx<=threshold and world.player.vx<0 then
-		world.tx=-(world.player.x-threshold)
-	end
+	world:update(dt)
 
 	playtime=math.floor(love.timer.getTime()-pausedtime-start)
 	TEsound.cleanup()
