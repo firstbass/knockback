@@ -13,7 +13,7 @@ function World.loadFile(filepath)
 			local index=string.gsub(line,"=.+","")		--text before =
 			local arguments=string.gsub(line,".+=","")	--text after =
 			if string.sub(line,1,2)=="--" then
-				--do nothing
+				--do nothing, essentially implementation of comments
 			elseif string.sub(line,1,1)=="~" then		-- a ~ means to load a Moveable object
 				index=string.gsub(index,"~","",1)		--index without ~
 				w[index]=assert(loadstring("return Moveable.new(w,"..arguments..")")(),"could not load line: "..line.." in file "..filepath)
@@ -56,9 +56,12 @@ function World:update(dt)
 end
 
 function World:draw()
+	love.graphics.translate(self.tx,self.ty)
+	love.graphics.setColor(255,255,255)
 	for i,ma in ipairs(self) do	
 		ma:draw()
 	end
+	love.graphics.translate(-self.tx,-self.ty)
 end
 
 function World:playMusic() TEsound.playLooping(self.music,"world") end
