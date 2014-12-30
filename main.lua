@@ -5,10 +5,8 @@ local love=love
 local ipairs=ipairs
 
 local world
-local keys,debug,paused
 local playtime,pausedtime,start
 local oxygenmono,dayposterblack
-local threshold=64				--threshold for when to begin scrolling the screen.
 
 local function round(num, idp)
 	local mult = 10^(idp or 0)
@@ -51,13 +49,14 @@ function love.draw()
 	for i,ma in ipairs(world) do
 		ma:draw()
 	end
+	local debug=debug
 	if debug then
 		love.graphics.translate(-world.tx,-world.ty)
 		love.graphics.setColor(0,0,0)	love.graphics.setFont(oxygenmono)
 		love.graphics.print(
 			"world name: "..world.name..
 			"\nx: "..round(world.player.x)..", y: "..round(world.player.y)..
-			"\ntx: "..round(world.tx)..", ty: "..round(world.ty)..
+			"\ntx: "..round(world.tx)..", ty: "..round(world.ty)..", ia: "..world.player.ia..
 			"\nfps: "..love.timer.getFPS()..
 			"\nplaytime: "..playtime.." seconds",10,10)
 	end
@@ -83,6 +82,7 @@ function love.keypressed(key)
 	elseif key==keys.debug then
 		debug=not debug
 	elseif key==keys.pause then
+		local paused=paused
 		paused=not paused
 		love.update,pausedupdate=pausedupdate,love.update
 		love.draw,pauseddraw=pauseddraw,love.draw
@@ -96,12 +96,14 @@ end
 
 function love.keyreleased(key)
 	if key==keys.up then
-		world.player.ay=world.g
+		world.player.ay=0
 	elseif key==keys.down then
-		world.player.ay=world.g
+		world.player.ay=0
 	elseif key==keys.left then
 		world.player.ax=0
 	elseif key==keys.right then
 		world.player.ax=0
 	end
+	world.player.ia=1
+	world.player:nextSprite()
 end

@@ -3,16 +3,14 @@ local Sprite=require "sprite"
 local love=love
 local ipairs=ipairs
 
-function Moveable.new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may)
-	local sprite,sprites,mxscl,myscl=Sprite.newSpriteField(spritepath,mxl,myl)
+function Moveable.new(world,spritepath,mc,mm,mx,my,mxl,myl,mvx,mvy,max,may,mia,mdir)
+	local sprite,sprites,mxscl,myscl=Sprite.newSpriteField(spritepath,mxl,myl,mia,mdir)
 	
-	local mc,mm,mx,my,mxl,myl,mxscl,myscl,mvx,mvy,max,may
-		=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mxscl or 1,myscl or 1,mvx or 0,mvy or 0,max or 0,may or 0	--default values
+	local mc,mm,mx,my,mxl,myl,mxscl,myscl,mvx,mvy,max,may,mia,mdir
+			=mc or false,mm or false,mx or 0,my or 0,mxl or 1,myl or 1,mxscl or 1,myscl or 1,mvx or 0,mvy or 0,max or 0,may or 0,mia or 1,mdir or "down"
 	local m={collidable=mc,moveable=mm,x=mx,y=my,cx=mcx,cy=mcy,xl=mxl,yl=myl,xscl=mxscl,yscl=myscl,vx=mvx,vy=mvy,ax=max,ay=may,
-		world=world,following=false,xcollisioncount={},ycollisioncount={},sprite=sprite,sprites=sprites}
+		world=world,following=false,xcollisioncount={},ycollisioncount={},ia=mia,ta=.10,cta=0,dir=mdir,pdir=dir,sprite=sprite,sprites=sprites}
 	setmetatable(m,{__index=Moveable})
-		--[[If something doesn't exist in the created Moveable object, it refers back to the Moveable table, due to this metatable.
-		This is essentially how all class inheritance in Lua works/is implemented. Metatables are weird but handy.]]
 	world[#world+1]=m	--inserts the moveable into a new index in the world
 	return m
 end
@@ -21,19 +19,45 @@ function Moveable:setWorldFollowing(following)
 	self.following=following
 end
 
+function Moveable:nextSprite()
+	self.sprite=self.sprites[self:currentDirection()..self.ia..".png"]
+end
+
+function Moveable:currentDirection()
+	if self.ay>0 then pdir="down" return "down"
+	elseif self.ay<0 then pdir="up" return "up"
+	elseif self.ax>0 then pdir="right" return "right"
+	elseif self.ax<0 then pdir="left" return "left"
+	else return pdir end
+end
+
 function Moveable:update(dt)
 	if self.moveable then
 		self.vx=(self.vx+self.ax)*self.world.f
 		self.vy=(self.vy+self.ay)*self.world.f	--(velocity+acceleration)*friction
 		self.x=self.x+self.vx
 		self.y=self.y+self.vy					--position+velocity
+		
+		if self:isMoving() then
+			self.cta=self.cta+dt
+			if self.cta>self.ta then
+				if self.ia<=3 then
+					self.ia=self.ia+1
+				else
+					self.ia=1
+				end
+				self:nextSprite()
+				self.cta=self.cta-self.ta
+			end
+		end
+		
 		if self.following then
 			if self.y+self.yl+self.world.ty>=love.window.getHeight()-self.world.threshold and self.vy>0 then
 				self.world.ty=-(self.y+self.yl+self.world.threshold-love.window.getHeight())
 			elseif self.y+self.world.ty<=self.world.threshold and self.vy<0 then
 				self.world.ty=-(self.y-self.world.threshold)
 			end
-	
+		
 			if self.x+self.xl+self.world.tx>=love.window.getWidth()-self.world.threshold and self.vx>0 then
 				self.world.tx=-(self.x+self.xl+self.world.threshold-love.window.getWidth())
 			elseif self.x+self.world.tx<=self.world.threshold and self.vx<0 then
@@ -54,6 +78,10 @@ function Moveable:update(dt)
 			end
 		end
 	end
+end
+
+function Moveable:isMoving()
+	return self.vx~=0 and self.ax~=0 or self.vy~=0 and self.ay~=0
 end
 
 function Moveable:draw()

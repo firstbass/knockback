@@ -2,7 +2,9 @@ local Sprite={}
 local love=love
 local ipairs=ipairs
 
-function Sprite.newSpriteField(filepath,xl,yl)
+function Sprite.newSpriteField(filepath,xl,yl,i,dir)
+	i=i or 1
+	dir=dir or "down"
 	local r
 	if filepath and love.filesystem.isFile(filepath) then
 		r=love.graphics.newImage(filepath)
@@ -14,9 +16,10 @@ function Sprite.newSpriteField(filepath,xl,yl)
 		for k,file in ipairs(items) do
 			local i=love.graphics.newImage(filepath.."/"..file)
 			i:setFilter("nearest","nearest")
-			table.insert(r,i)
+			r[file]=i
 		end
-		return r[1],r,xl/r[1]:getWidth(),yl/r[1]:getHeight()
+		local dr=r[dir..tostring(i)..".png"]
+		return dr,r,xl/dr:getWidth(),yl/dr:getHeight()
 	else
 		r=love.graphics.newCanvas()
 		r:setFilter("nearest","nearest")
