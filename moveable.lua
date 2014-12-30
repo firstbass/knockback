@@ -80,12 +80,12 @@ function Moveable:update(dt)
 	end
 end
 
-function Moveable:isMoving()
-	return self.vx~=0 and self.ax~=0 or self.vy~=0 and self.ay~=0
-end
-
 function Moveable:draw()
 	love.graphics.draw(self.sprite,self.x,self.y,0,self.xscl,self.yscl)
+end
+
+function Moveable:isMoving()
+	return self.vx~=0 and self.ax~=0 or self.vy~=0 and self.ay~=0
 end
 
 function Moveable:collidesWith(ma)

@@ -55,6 +55,12 @@ function World:update(dt)
 	end
 end
 
+function World:draw()
+	for i,ma in ipairs(self) do	
+		ma:draw()
+	end
+end
+
 function World:playMusic() TEsound.playLooping(self.music,"world") end
 function World:pauseMusic() TEsound.pause("world") end
 function World:resumeMusic() TEsound.resume("world") end

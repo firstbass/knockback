@@ -46,9 +46,7 @@ end
 function love.draw()
 	love.graphics.translate(world.tx,world.ty)
 	love.graphics.setColor(255,255,255)
-	for i,ma in ipairs(world) do
-		ma:draw()
-	end
+	world:draw()
 	local debug=debug
 	if debug then
 		love.graphics.translate(-world.tx,-world.ty)
