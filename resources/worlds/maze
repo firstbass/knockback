@@ -1,0 +1,9 @@
+name=maze
+f=0.90
+a=.3
+threshold=32
+~player='resources/sprites/robots/',t,t,40,40,18,54
+~b=nil,t,f,0,0,512,32
+~c=nil,t,f,0,32,32,512
+~d=nil,t,f,66,32,32,480
+~e=nil,t,f,300,300,100,100

@@ -23,7 +23,7 @@ function Sprite.newSpriteField(filepath,xl,yl,i,dir)
 	else
 		r=love.graphics.newCanvas()
 		r:setFilter("nearest","nearest")
-		return r,{r},xl/r:getWidth(),yl/r:getHeight()
+		return r,{r},1,1
 	end
 end
 

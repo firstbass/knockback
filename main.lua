@@ -20,8 +20,9 @@ function love.load()
 	
 	math.randomseed(os.time())
 	
-	world=World.loadFile("resources/worlds/testworld")
+	world=World.loadFile("resources/worlds/maze")
 	world:initializeCollisions()
+	world:basicSprites(0,0,0)
 	world.player:setWorldFollowing(true)
 	world.threshold=world.threshold+0
 	
